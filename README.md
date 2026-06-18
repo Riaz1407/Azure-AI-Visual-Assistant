@@ -2,6 +2,11 @@
 
 An AI-powered image analysis web application built using **Azure AI Vision** and **Google Gemini**.
 
+🚀 Live Demo:
+
+https://azure-ai-visual-assistant.onrender.com
+
+An AI-powered image analysis web application built using Azure AI Vision, Google Gemini, and Flask.
 ## ✨ Features
 
 * 🖼️ Image Upload
