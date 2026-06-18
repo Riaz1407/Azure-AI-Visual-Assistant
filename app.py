@@ -17,18 +17,12 @@ import os
 import time
 
 
-# ==========================
-# Flask App
-# ==========================
 
 app = Flask(__name__)
 
 app.secret_key = "riaz_secret_key_change_me"
 
 
-# ==========================
-# Upload Folder
-# ==========================
 
 UPLOAD_FOLDER = "uploads"
 
@@ -40,9 +34,9 @@ if not os.path.exists(UPLOAD_FOLDER):
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
-# ==========================
+
 # Azure Credentials
-# ==========================
+
 
 AZURE_ENDPOINT = os.getenv(
 
@@ -71,9 +65,9 @@ client = ImageAnalysisClient(
 )
 
 
-# ==========================
+
 # Gemini
-# ==========================
+
 
 GEMINI_API_KEY=os.getenv(
 
@@ -98,9 +92,7 @@ model = genai.GenerativeModel(
 )
 
 
-# ==========================
-# Gemini Explanation
-# ==========================
+
 
 def explain_image(
 
@@ -151,9 +143,6 @@ Write naturally.
 
 
 
-# ==========================
-# Gemini Chat
-# ==========================
 
 def chat_with_image(
 
@@ -214,9 +203,6 @@ Maximum 60 words.
 
 
 
-# ==========================
-# Home
-# ==========================
 
 @app.route("/")
 
@@ -230,10 +216,6 @@ def home():
     )
 
 
-
-# ==========================
-# Analyze Image
-# ==========================
 
 @app.route(
 
@@ -311,16 +293,12 @@ def analyze():
 
 
 
-        # Caption
-
         if result.caption:
 
 
             caption=result.caption.text
 
 
-
-        # Objects
 
         if isinstance(
 
@@ -361,8 +339,7 @@ def analyze():
 
 
 
-        # Tags
-
+    
         if isinstance(
 
             result.tags,
@@ -488,9 +465,6 @@ def analyze():
 
 
 
-# ==========================
-# Gemini Chat Route
-# ==========================
 
 @app.route(
 
@@ -557,9 +531,6 @@ def ask():
 
 
 
-# ==========================
-# Uploaded Images
-# ==========================
 
 @app.route(
 
@@ -585,10 +556,6 @@ def uploaded_file(
 
 
 
-
-# ==========================
-# Run App
-# ==========================
 
 if __name__=="__main__":
 
