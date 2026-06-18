@@ -44,10 +44,17 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # Azure Credentials
 # ==========================
 
-AZURE_ENDPOINT = "YOUR_AZURE_ENDPOINT"
+AZURE_ENDPOINT = os.getenv(
 
-AZURE_KEY = "YOUR_AZURE_KEY"
+    "AZURE_ENDPOINT"
 
+)
+
+AZURE_KEY = os.getenv(
+
+    "AZURE_KEY"
+
+)
 
 
 
@@ -68,14 +75,20 @@ client = ImageAnalysisClient(
 # Gemini
 # ==========================
 
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+GEMINI_API_KEY=os.getenv(
+
+    "GEMINI_API_KEY"
+
+)
 
 
 genai.configure(
 
-    api_key=GEMINI_API_KEY
+api_key=GEMINI_API_KEY
 
 )
+
+
 
 
 model = genai.GenerativeModel(
