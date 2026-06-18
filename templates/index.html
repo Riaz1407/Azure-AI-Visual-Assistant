@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>
+
+        Azure AI Visual Assistant
+
+    </title>
+
+    <link
+
+        rel="stylesheet"
+
+        href="{{ url_for('static', filename='style.css') }}"
+
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+
+    <!-- LEFT PANEL -->
+
+
+    <div class="left-panel">
+
+
+
+        <div class="header">
+
+            <h1>
+
+                🤖 Azure AI Visual Assistant
+
+            </h1>
+
+
+            <p>
+
+                Powered by Azure Vision + Gemini
+
+            </p>
+
+
+        </div>
+
+
+
+
+
+
+        <form
+
+            action="/analyze"
+
+            method="POST"
+
+            enctype="multipart/form-data"
+
+        >
+
+
+
+            <div class="upload-box">
+
+
+
+                <h2>
+
+                    Drop Image Here
+
+                </h2>
+
+
+
+                <p>
+
+                    or Browse Files
+
+                </p>
+
+
+
+
+                <input
+
+                    type="file"
+
+                    name="image"
+
+                    required
+
+                >
+
+
+
+
+                <div class="buttons">
+
+
+                    <button
+
+                        type="submit"
+
+                    >
+
+                        Analyze
+
+                    </button>
+
+
+
+
+                    <a
+
+                        href="/"
+
+                        class="reset-btn"
+
+                    >
+
+                        Reset
+
+                    </a>
+
+
+
+                </div>
+
+
+
+
+
+                {% if processing_time %}
+
+
+                <div class="speed">
+
+
+                    ⚡ Processed in
+
+                    {{processing_time}}
+
+                    seconds
+
+
+                </div>
+
+
+                {% endif %}
+
+
+
+            </div>
+
+
+
+        </form>
+
+
+
+
+
+
+        {% if image %}
+
+
+        <div class="result-container">
+
+
+
+            <div class="image-card">
+
+
+
+                <img
+
+                    src="/uploads/{{image}}"
+
+                    class="preview"
+
+                >
+
+
+
+            </div>
+
+
+
+
+
+
+            <div class="caption-card">
+
+
+
+                <h2>
+
+                    ✨ Caption
+
+                </h2>
+
+
+
+
+                <p>
+
+                    {{caption}}
+
+                </p>
+
+
+
+
+            </div>
+
+
+
+
+        </div>
+
+
+        {% endif %}
+
+
+
+
+
+
+
+        {% if tags %}
+
+
+        <div class="tags-card">
+
+
+            <h2>
+
+                🏷 Tags
+
+            </h2>
+
+
+
+
+            {% for tag in tags %}
+
+
+            <span class="tag">
+
+                {{tag.name}}
+
+            </span>
+
+
+
+            {% endfor %}
+
+
+
+        </div>
+
+
+        {% endif %}
+
+
+
+
+
+
+
+
+
+        {% if objects %}
+
+
+        <div class="tags-card">
+
+
+            <h2>
+
+                🎯 Objects
+
+            </h2>
+
+
+
+
+            {% for obj in objects %}
+
+
+            <span class="tag">
+
+                {{obj.name}}
+
+            </span>
+
+
+
+            {% endfor %}
+
+
+
+        </div>
+
+
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+        {% if gemini_response %}
+
+
+
+        <div class="gemini-card">
+
+
+
+            <h2>
+
+                🤖 Gemini Assistant
+
+            </h2>
+
+
+
+
+            <p>
+
+                {{gemini_response}}
+
+            </p>
+
+
+
+        </div>
+
+
+
+        {% endif %}
+
+
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- RIGHT PANEL -->
+
+
+    <div class="right-panel">
+
+
+
+        <h2>
+
+            🤖 Gemini Chat
+
+        </h2>
+
+
+
+
+
+        <div class="chat-box">
+
+
+
+            <div class="bot-message">
+
+
+                Hi 👋
+
+
+                <br><br>
+
+
+                Upload an image
+
+
+                and ask me anything.
+
+
+
+
+            </div>
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+        <div class="chat-input">
+
+
+
+            <input
+
+                type="text"
+
+                id="question"
+
+                placeholder="Ask Gemini..."
+
+            >
+
+
+
+
+            <button
+
+                type="button"
+
+                onclick="askGemini()"
+
+            >
+
+                Send
+
+            </button>
+
+
+
+
+        </div>
+
+
+
+
+
+    </div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<script>
+
+
+
+async function askGemini(){
+
+
+
+let question=
+
+document
+
+.getElementById(
+
+"question"
+
+)
+
+.value;
+
+
+
+
+
+if(question==""){
+
+
+return;
+
+
+}
+
+
+
+
+
+let chatBox=
+
+document
+
+.querySelector(
+
+".chat-box"
+
+);
+
+
+
+
+
+
+chatBox.innerHTML+=`
+
+<div class="user-message">
+
+${question}
+
+</div>
+
+`;
+
+
+
+
+
+
+
+let formData=
+
+new FormData();
+
+
+
+
+formData.append(
+
+"question",
+
+question
+
+);
+
+
+
+
+
+
+
+let response=
+
+await fetch(
+
+"/ask",
+
+{
+
+method:"POST",
+
+body:formData
+
+}
+
+);
+
+
+
+
+
+
+let data=
+
+await response.text();
+
+
+
+
+
+
+
+chatBox.innerHTML+=`
+
+<div class="bot-message">
+
+${data}
+
+</div>
+
+`;
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"question"
+
+)
+
+.value="";
+
+
+
+
+
+
+chatBox.scrollTop=
+
+chatBox.scrollHeight;
+
+
+
+
+}
+
+
+
+</script>
+
+
+
+
+
+</body>
+
+</html>
